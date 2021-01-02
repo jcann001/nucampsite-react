@@ -4,6 +4,7 @@ import Main from './components/MainComponent';
 import './App.css';
 import Directory from './components/DirectoryComponent';
 import { CAMPSITES } from './shared/campsites';
+import { BrowserRouter } from 'react-router-dom';
 
 class App extends Component {
     constructor(props) {
@@ -14,9 +15,11 @@ class App extends Component {
     }
     render() {
         return (
+            <BrowserRouter>
             <div className="App">
-            <Main />
-        </div>
+                <Main />
+            </div>
+            </BrowserRouter>
         );
     }
 }
