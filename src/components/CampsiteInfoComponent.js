@@ -91,8 +91,6 @@ import { Control, LocalForm, Errors } from "react-redux-form";
             this.toggleModal();
         }
 
-        
-
 
         render(){
             const required = val => val && val.length;
