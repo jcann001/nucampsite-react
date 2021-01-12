@@ -5,7 +5,6 @@ import { render } from "@testing-library/react";
 // import { Modal } from "bootstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
 
-
     function RenderCampsite({campsite}) {
         return(
             <div class="col-md-5 m-1">
@@ -75,27 +74,9 @@ import { Control, LocalForm, Errors } from "react-redux-form";
             };
 
             this.toggleModal = this.toggleModal.bind(this);
-            // this.handleInputChange = this.handleInputChange.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
         }
 
-        validate(rating, author, text){
-            const errors = {
-                rating: "",
-                author: "",
-                text: ""
-            };
-
-            if(this.state.touched.author){
-            if(author.length > 2){
-                errors.author="Must be at least 2 characters."
-            } else if (author.length > 15) {
-                errors.author="Must be less than 16 characters"
-            }
-        }
-
-            return errors;
-        }
     
         toggleModal() {
             this.setState({
@@ -110,15 +91,13 @@ import { Control, LocalForm, Errors } from "react-redux-form";
             this.toggleModal();
         }
 
-        handleBlur = (field) => () => {
-            this.setState({
-                touched: {...this.state.touched, [field]: true}
-            });
-        }
+        
 
 
         render(){
-            const errors = this.validate(this.state.rating, this.state.author, this.state.text);  
+            const required = val => val && val.length;
+            const maxLength = len => val => !val || (val.length <= len);
+            const minLength = len => val => val && (val.length >= len);  
             return(
                 <React.Fragment>
                 <Button onClick={this.toggleModal} class="fas fa-pencil-alt fa-lg" boolean="outline" outline="secondary">Submit Comment</Button>
@@ -138,7 +117,27 @@ import { Control, LocalForm, Errors } from "react-redux-form";
                         </div>
                         <div className="form-group">
                             <Label htmlFor="author">Your Name</Label> 
-                            <Control.text className="form-control" model=".author" id="author" name="author"  invalid={errors.author} onBlur={this.handleBlur("author")} />
+                            <Control.text className="form-control" 
+                                            model=".author" 
+                                            id="author" 
+                                            name="author"  
+                                            validators={{
+                                            required, 
+                                            minLength: minLength(2),
+                                            maxLength: maxLength(15)
+                                            }} 
+                                            />
+                                            <Errors
+                                        className="text-danger"
+                                        model=".author"
+                                        show="touched"
+                                        component="div"
+                                        messages={{
+                                            required: 'Required',
+                                            minLength: 'Must be at least 2 characters',
+                                            maxLength: 'Must be 15 characters or less'
+                                            }}
+                                            />
                         </div>
                         <div className="form-group">
                             <Label htmlFor="comment">Comment</Label>
