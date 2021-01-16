@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { render } from "@testing-library/react";
 // import { Modal } from "bootstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
+import { Loading } from './LoadingComponent';
 
     function RenderCampsite({campsite}) {
         return(
@@ -18,7 +19,7 @@ import { Control, LocalForm, Errors } from "react-redux-form";
         )
     }
 
-    function RenderComments({comments}) {
+    function RenderComments({comments, addComment, campsiteId}) {
         if(comments){
             return (
                 <div class="col-md-5">
@@ -26,13 +27,33 @@ import { Control, LocalForm, Errors } from "react-redux-form";
                     {comments.map(comment => <div key={comment.id}> {comment.text} </div>)}
                     {comments.map(comment => <div key={comment.id}> {comment.author} {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))} </div>)}
                     
-                    <CommentForm />
+                    <CommentForm campsiteId={campsiteId} addComment={addComment} />
                 </div>
             )
         }
     }
 
     function CampsiteInfo(props) {
+        if (props.isLoading) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        if (props.errMess) {
+            return (
+                <div className="container">
+                    <div className="row">
+                        <div className="col">
+                            <h4>{props.errMess}</h4>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
         if (props.campsite) {
             return (
                 <div className="container">
@@ -48,7 +69,11 @@ import { Control, LocalForm, Errors } from "react-redux-form";
                 </div>
                     <div className="row">
                         <RenderCampsite campsite={props.campsite} />
-                        <RenderComments comments={props.comments} />
+                        <RenderComments 
+                        comments={props.comments}
+                        addComment={props.addComment}
+                        campsiteId={props.campsite.id}
+                    />
                     </div>
                 </div>
                 );
@@ -86,9 +111,8 @@ import { Control, LocalForm, Errors } from "react-redux-form";
         }
     
         handleSubmit(values) {
-            alert(`Current State is: ${JSON.stringify(values)}`);
-            console.log(`Current State is: ${JSON.stringify(values)}`);
             this.toggleModal();
+            this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text);
         }
 
 
